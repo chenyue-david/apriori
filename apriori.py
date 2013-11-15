@@ -1,3 +1,4 @@
+#encoding = utf-8
 import sys
 
 #what do i need: a dict containing the support for each dataset,
@@ -12,16 +13,17 @@ def init():
   f = open(sys.argv[3],'r')
   lines = f.readlines()
   for line in lines:
-    datasets.append(line.split())
+    datasets.append(map(str,line.split()))
   return datasets
 
-def find_elements(datasets):
+def find_elements(datasets, supports_dict):
   elements = [] #elements is a list of all item strings
   for record in datasets:
     for element in record:
       if element not in elements:
         elements.append(element)
-  return elements
+        supports_dict[frozenset(list(element))] = 0
+  return elements, supports_dict
 
 def gen_joint(kfreqsets, supports_dict):
   '''takes a list of freqsets whose length = k,
@@ -62,17 +64,18 @@ def apriori():
   frequent sets and support dict'''
   datasets = init()
   support = sys.argv[1]
-  #create 1freqsets
-  elements = find_elements(datasets)
   supports_dict = {}
+  elements, supports_dict = find_elements(datasets, supports_dict)  #create 1freqsets
   all_freqsets = []
-  all_freqsets.append(map(list, elements))
+  pruned, supports_dict = prune(map(list,elements), supports_dict, datasets, support)
+  all_freqsets.append(pruned)
   pruned = [1, 2]
   while(len(pruned) > 0):
+  #  print all_freqsets
     cand_sets, supports_dict = gen_joint(all_freqsets[-1], supports_dict)
     pruned, supports_dict = prune(cand_sets, supports_dict, datasets, support)
     all_freqsets.append(pruned)
   print all_freqsets, supports_dict
   return all_freqsets, supports_dict
 
-apriori()
+#apriori()
