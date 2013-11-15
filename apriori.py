@@ -1,9 +1,6 @@
 #encoding = utf-8
 import sys
 
-#what do i need: a dict containing the support for each dataset,
-#a list of frozenset(dataset)
-
 def init():
   '''opens the flow of file containing data, 
   assigns arguments to support and confidence'''
